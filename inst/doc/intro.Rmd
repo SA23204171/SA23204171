@@ -1,0 +1,89 @@
+---
+title: "Introduction to SA23204171"
+author: "SA23204171"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Introduction to SA23204171}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+## Overview
+
+__SA23204171__ is a simple package that converts portfolio data into a specific 
+from. Given a data frame of which each row containing the first 10 core stocks 
+of a portfolio, convert it to a matrix with its rownames being the names of all 
+core stocks in the data frame, and the rest of rows marking whether this core 
+stock appears in the portfolio corresponding to its row in the original data frame 
+with 1 and 0. Meanwhile there might be false data in some portfolios, and we 
+find them and correct them.
+
+## Convert a correct portfolio data frame
+
+For simplicity we use the 26 letters as stock names to give the following 
+example.
+
+```{r}
+# stock name
+stock <- LETTERS
+l <- list()
+for(i in 1:10){
+  # generate 10 portfolios
+  l[[i]] <- sample(stock, 10)
+}
+# portfolio is a data frame with each row containing the 10 core stocks of a 
+# portfolio. portfolio has no error data, because every stock appears at most 
+# once in each row.
+portfolio <- as.data.frame(rbind(l[[1]], l[[2]], l[[3]], l[[4]], l[[5]], l[[6]],
+                                 l[[7]], l[[8]], l[[9]], l[[10]]))
+# convert the data frame
+library(SA23204171)
+result <- convert(portfolio)
+```
+
+The output __result__ is a list. The first element _res_ is the converted 
+matrix with each row corresponding to the portfolio in the data frame
+__portfolio__, and if _res_[i, j] = 1, then stock j appears in the portfolio i.
+Besides, the order of _res_'s rownames corresponds to the number of times of 
+each stock appearing in all portfolios. Namely, the R code "colSums(result$res)"
+gives a vector of descending order. The second element _data_ is the original data 
+frame __portfolio__. The third element _mat.m_ is of no use to the user. The 
+last element _correct_ tells whether the original data frame contains false data. 
+If _correct_ is TRUE, then the original data frame contains no false data, FALSE
+otherwise.
+
+## Convert a portfolio data frame with error data
+
+For simplicity we use the 26 letters as stock names to give the following 
+example.
+
+```{r}
+# stock names
+stock <- LETTERS
+l <- list()
+for(i in 1:10){
+  # generate 10 portfolios
+  l[[i]] <- sample(stock, 10)
+}
+# this portfolio contains false data, with a few stocks appearing more than once
+# in the same portfolio
+l[[1]][10] <- l[[1]][5]
+l[[6]][8] <- l[[6]][2]
+portfolio <- as.data.frame(rbind(l[[1]], l[[2]], l[[3]], l[[4]], l[[5]], l[[6]],
+                                 l[[7]], l[[8]], l[[9]], l[[10]]))
+# first use the function convert() to convert the data frame
+library(SA23204171)
+result <- convert(portfolio)
+result$correct
+# FALSE means there are errors in the original data, so we use correct.error() 
+# to filter out these false portfolios and give the correct converted matrix.
+# The error is apparent because there are "2" in the converted matrix.
+new_result <- correct.error(result)
+new_result
+```
+
+The output __new_result__ of the function correct.error() is a list. The first 
+element is the correct matrix, and this time it contains only 8 rows, because 
+the 1st and 6th portfolio have been filtered out. The second element provides a
+check for whether this time the converted matrix is correct.

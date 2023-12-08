@@ -1,0 +1,22 @@
+Package: SA23204171
+Type: Package
+Title: convert and correct portfolio-stock data
+Version: 1.0
+Date: 2023-12-04
+Author: SA23204171
+Maintainer: SA23204171 <sy200149@mail.ustc.edu.cn>
+Description: Given a data frame of which each row containing the first 10 core 
+             stocks of a portfolio, convert it to a matrix with its rownames 
+             being the names of all core stocks in the data frame, and the rest 
+             of rows marking whether this core stock appears in the 
+             corresponding portfolio with 1 and 0. Meanwhile there might be 
+             false data in some portfolios, and we find them and correct them.
+License: GPL (>= 2)
+Imports: Rcpp
+Suggests: knitr, rmarkdown
+VignetteBuilder: knitr
+URL: http://github.com/davidatustc/SA23204171_Rpackage
+BugReports: http://github.com/davidatustc/SA23204171_Rpackage/issues
+LinkingTo: Rcpp
+RoxygenNote: 7.2.3
+Encoding: UTF-8
